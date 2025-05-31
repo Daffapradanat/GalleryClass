@@ -1,6 +1,6 @@
 # 📸 GalleryClass
 
-**GalleryClass** adalah proyek pribadi yang saya buat sebagai kenangan perjalanan sekolah saya dari kelas 10 hingga kelas 12. Proyek ini berisi foto-foto teman-teman dan saya sendiri selama masa SMA, dikemas dalam bentuk galeri sederhana menggunakan HTML, CSS, dan JavaScript.
+**GalleryClass** adalah proyek pribadi yang saya buat sebagai kenangan perjalanan sekolah saya dari kelas 10 hingga kelas 12. Proyek ini berisi foto-foto teman-teman dan saya sendiri selama masa SMKN 12 SURABAYA, dikemas dalam bentuk galeri sederhana menggunakan HTML, CSS, dan JavaScript.
 
 ## 🎯 Tujuan
 Proyek ini dibuat bukan untuk keperluan komersial atau tugas sekolah, melainkan murni sebagai bentuk dokumentasi dan nostalgia terhadap masa-masa indah di sekolah.
