@@ -1,15 +1,3 @@
-function includeHTML(id, file) {
-    fetch(file)
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById(id).innerHTML = data;
-        })
-        .catch(err => console.error(`Failed to load ${file}:`, err));
-}
-
-includeHTML("sidebar-include", "sidebar.html");
-includeHTML("header-include", "header.html");
-
 const welcomeWords = ['welcome', 'to', 'Gallery of Memory', 'PPLG 2'];
 let currentWordIndex = 0;
 
@@ -302,13 +290,6 @@ fetch('data.json')
         `;
     });
 
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('active');
-    }
-}
-
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
@@ -329,6 +310,45 @@ window.addEventListener('resize', () => {
             recalculateAllLayouts();
         }, 200);
     }, 300);
+});
+
+function scrollToTop() {
+    window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.sidebar a, .mobile-nav a');
+    
+    navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        navLinks.forEach(l => l.classList.remove('active'));
+        
+        this.classList.add('active');
+        
+        const icon = this.querySelector('i').className;
+        navLinks.forEach(l => {
+        if (l.querySelector('i').className === icon) {
+            l.classList.add('active');
+        }
+        });
+    });
+    });
+});
+
+startWelcomeSequence();
+
+window.addEventListener('scroll', function() {
+    const floatingBtn = document.querySelector('.floating-hover-btn');
+    if (window.scrollY > 300) {
+    floatingBtn.style.opacity = '1';
+    } else {
+    floatingBtn.style.opacity = '0.7';
+    }
 });
 
 const style = document.createElement('style');
