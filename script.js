@@ -10,13 +10,22 @@ function includeHTML(id, file) {
 includeHTML("sidebar-include", "sidebar.html");
 includeHTML("header-include", "header.html");
 
-const welcomeWords = ['welcome', 'to', 'Gallery of Memory', 'PPLG 2'];
+const welcomeWords = ['welcome', 'to', 'Gallery of Memory', 'PPLG 2', 'Generation I'];
 let currentWordIndex = 0;
 
 window.addEventListener('load', () => {
+    const hasSeenWelcome = sessionStorage.getItem('welcomeScreenShown');
+    
     setTimeout(() => {
         document.querySelector('.splash').style.display = 'none';
-        startWelcomeAnimation();
+        
+        if (!hasSeenWelcome) {
+            startWelcomeAnimation();
+            sessionStorage.setItem('welcomeScreenShown', 'true');
+        } else {
+            document.querySelector('.welcome-screen').style.display = 'none';
+            document.querySelector('.container').classList.add('show');
+        }
     }, 3000);
 });
 
