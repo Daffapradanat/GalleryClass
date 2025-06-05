@@ -1,3 +1,15 @@
+function includeHTML(id, file) {
+    fetch(file)
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById(id).innerHTML = data;
+        })
+        .catch(err => console.error(`Failed to load ${file}:`, err));
+}
+
+includeHTML("sidebar-include", "sidebar.html");
+includeHTML("header-include", "header.html");
+
 const welcomeWords = ['welcome', 'to', 'Gallery of Memory', 'PPLG 2'];
 let currentWordIndex = 0;
 
