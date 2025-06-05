@@ -257,7 +257,7 @@ function enableInfiniteScroll() {
     });
 }
 
-fetch('data.json')
+fetch('../../data.json')
     .then(res => {
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
@@ -332,6 +332,248 @@ window.addEventListener('resize', () => {
         }, 200);
     }, 300);
 });
+
+window.performanceTracker = {
+    imageLoadStartTime: 0,
+    imageLoadEndTime: 0,
+    totalImageSize: 0,
+    loadedImageCount: 0,
+    imageLoadTimes: [],
+    totalDataTransferred: 0
+};
+
+const enhancedObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const img = entry.target;
+            const realSrc = img.dataset.src;
+            
+            if (realSrc && !img.src.includes('drive.google.com/uc')) {
+                const loadStartTime = performance.now();
+                
+                img.style.filter = 'blur(5px)';
+                
+                const tempImg = new Image();
+                tempImg.onload = () => {
+                    const loadEndTime = performance.now();
+                    const loadTime = loadEndTime - loadStartTime;
+                    
+                    window.performanceTracker.imageLoadTimes.push(loadTime);
+                    window.performanceTracker.loadedImageCount++;
+                    window.performanceTracker.imageLoadEndTime = loadEndTime;
+                    
+                    const estimatedSize = estimateImageSize(tempImg.width, tempImg.height);
+                    window.performanceTracker.totalDataTransferred += estimatedSize;
+                    
+                    img.src = realSrc;
+                    img.style.filter = 'none';
+                    img.style.transition = 'filter 0.3s ease';
+                    
+                    setTimeout(() => calculateMasonryLayout(img), 50);
+                    
+                    if (typeof window.updateSettingsData === 'function') {
+                        window.updateSettingsData();
+                    }
+                };
+                
+                tempImg.onerror = () => {
+                    const fileId = realSrc.match(/id=(.+?)(&|$)/)?.[1];
+                    if (fileId) {
+                        const size = getOptimalImageSize();
+                        img.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=${size}`;
+                        
+                        window.performanceTracker.loadedImageCount++;
+                        const estimatedSize = estimateImageSizeFromThumbnail(size);
+                        window.performanceTracker.totalDataTransferred += estimatedSize;
+                        
+                        setTimeout(() => calculateMasonryLayout(img), 100);
+                    }
+                    img.style.filter = 'none';
+                    
+                    if (typeof window.updateSettingsData === 'function') {
+                        window.updateSettingsData();
+                    }
+                };
+                
+                tempImg.src = realSrc;
+                enhancedObserver.unobserve(img);
+            }
+        }
+    });
+}, {
+    rootMargin: '100px'
+});
+
+function estimateImageSize(width, height) {
+    const compressionRatio = 0.15;
+    const sizeInBytes = width * height * 3 * compressionRatio;
+    return sizeInBytes / (1024 * 1024);
+}
+
+function estimateImageSizeFromThumbnail(sizeParam) {
+    const sizeMatch = sizeParam.match(/(\d+)/);
+    if (sizeMatch) {
+        const size = parseInt(sizeMatch[1]);
+        return estimateImageSize(size, size * 0.75);
+    }
+    return 0.5;
+}
+
+function loadBatchWithTracking() {
+    const IMAGES_PER_BATCH = getImagesPerBatch();
+    
+    if (isLoading || currentBatch * IMAGES_PER_BATCH >= allUrls.length) {
+        return;
+    }
+    
+    if (currentBatch === 0) {
+        window.performanceTracker.imageLoadStartTime = performance.now();
+    }
+    
+    isLoading = true;
+    const gallery = document.getElementById('gallery');
+    const startIndex = currentBatch * IMAGES_PER_BATCH;
+    const endIndex = Math.min(startIndex + IMAGES_PER_BATCH, allUrls.length);
+    
+    const fragment = document.createDocumentFragment();
+    
+    for (let i = startIndex; i < endIndex; i++) {
+        const link = allUrls[i];
+        const idMatch = link.match(/\/d\/(.+?)\//);
+        if (!idMatch) continue;
+        
+        const fileId = idMatch[1];
+        const baseUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        
+        const { col, img } = createImagePlaceholder(i);
+        
+        img.dataset.src = baseUrl;
+        
+        img.onerror = function() {
+            const size = getOptimalImageSize();
+            this.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=${size}`;
+        };
+        
+        enhancedObserver.observe(img);
+        
+        fragment.appendChild(col);
+    }
+    
+    gallery.appendChild(fragment);
+    
+    currentBatch++;
+    isLoading = false;
+    
+    updateLoadMoreButton();
+}
+
+function trackMemoryUsage() {
+    if ('memory' in performance) {
+        return {
+            used: Math.round(performance.memory.usedJSHeapSize / (1024 * 1024)),
+            total: Math.round(performance.memory.totalJSHeapSize / (1024 * 1024)),
+            limit: Math.round(performance.memory.jsHeapSizeLimit / (1024 * 1024))
+        };
+    }
+    return null;
+}
+
+function monitorNetworkPerformance() {
+    if ('connection' in navigator) {
+        const connection = navigator.connection;
+        return {
+            effectiveType: connection.effectiveType,
+            downlink: connection.downlink,
+            rtt: connection.rtt,
+            saveData: connection.saveData
+        };
+    }
+    return null;
+}
+
+function loadDataWithPerformanceTracking() {
+    const fetchStartTime = performance.now();
+    
+    fetch('data.json')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            const fetchEndTime = performance.now();
+            const fetchTime = fetchEndTime - fetchStartTime;
+            
+            allUrls = data.urls;
+            
+            if (!Array.isArray(allUrls) || allUrls.length === 0) {
+                throw new Error('No URLs found in data.json');
+            }
+            
+            console.log(`Loaded ${allUrls.length} images from data.json in ${fetchTime.toFixed(2)}ms`);
+            
+            window.performanceTracker.totalImages = allUrls.length;
+            window.performanceTracker.jsonLoadTime = fetchTime;
+            
+            for (let i = allUrls.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allUrls[i], allUrls[j]] = [allUrls[j], allUrls[i]];
+            }
+            
+            console.log('Images shuffled for random display');
+            
+            loadBatchWithTracking();
+        })
+        .catch(err => {
+            console.error("Gagal memuat data:", err);
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = `
+                <div style="
+                    grid-column: 1 / -1;
+                    text-align: center; 
+                    padding: 2rem; 
+                    color: #888;
+                    font-size: 1.2rem;
+                ">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                    Gagal memuat galeri. Pastikan file data.json tersedia dan berisi URL yang valid.
+                    <br><br>
+                    <button onclick="location.reload()" style="
+                        background: #333; 
+                        color: white; 
+                        border: none; 
+                        padding: 10px 20px; 
+                        border-radius: 5px; 
+                        cursor: pointer;
+                    ">
+                        <i class="fas fa-refresh"></i> Refresh Halaman
+                    </button>
+                </div>
+            `;
+        });
+}
+
+window.getPerformanceData = function() {
+    return {
+        totalImages: allUrls ? allUrls.length : 0,
+        loadedImages: window.performanceTracker.loadedImageCount,
+        totalDataTransferred: window.performanceTracker.totalDataTransferred,
+        averageLoadTime: window.performanceTracker.imageLoadTimes.length > 0 
+            ? window.performanceTracker.imageLoadTimes.reduce((a, b) => a + b, 0) / window.performanceTracker.imageLoadTimes.length
+            : 0,
+        memoryUsage: trackMemoryUsage(),
+        networkInfo: monitorNetworkPerformance()
+    };
+};
+
+// loadDataWithPerformanceTracking();
+
+setInterval(() => {
+    if (typeof window.updateSettingsData === 'function') {
+        window.updateSettingsData();
+    }
+}, 5000);
 
 function scrollToTop() {
     window.scrollTo({

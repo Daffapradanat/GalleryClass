@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="resource/css/style.css">
   <link rel="stylesheet" href="resource/css/credits.css">
+  <link rel="stylesheet" href="resource/css/setting.css">
 </head>
 <body>
   <div class="splash">
@@ -175,8 +176,118 @@
     </div>
   </div>
 
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class="fas fa-cog"></i>
+                Settings
+            </div>
+            <button class="close" onclick="closeSettingsModal()">&times;</button>
+        </div>
+        <div class="modal-settings">
+            <div class="settings-content">
+                
+                <div class="settings-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Statistik Gallery
+                    </h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-images stat-icon"></i>
+                            <div class="stat-value" id="totalImages">0</div>
+                            <div class="stat-label">Total Gambar</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-eye stat-icon"></i>
+                            <div class="stat-value" id="loadedImages">0</div>
+                            <div class="stat-label">Gambar Dimuat</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-download stat-icon"></i>
+                            <div class="stat-value" id="dataTransfer">0 MB</div>
+                            <div class="stat-label">Data Transfer</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div class="stat-value" id="loadTime">0s</div>
+                            <div class="stat-label">Waktu Muat</div>
+                        </div>
+                    </div>
+                    <button class="refresh-btn" onclick="refreshGalleryStats()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Statistik
+                    </button>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-server"></i>
+                        Performa Server
+                    </h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-tachometer-alt stat-icon"></i>
+                            <div class="stat-value" id="pingValue">0ms</div>
+                            <div class="stat-label">Ping</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill good-performance" id="pingBar" style="width: 0%"></div>
+                            </div>
+                            <div class="server-status">
+                                <div class="status-indicator status-good" id="pingStatus"></div>
+                                <span id="pingStatusText">Excellent</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-database stat-icon"></i>
+                            <div class="stat-value" id="serverLoad">0%</div>
+                            <div class="stat-label">Beban Server</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill good-performance" id="loadBar" style="width: 0%"></div>
+                            </div>
+                            <div class="server-status">
+                                <div class="status-indicator status-good" id="loadStatus"></div>
+                                <span id="loadStatusText">Low Load</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-wifi stat-icon"></i>
+                            <div class="stat-value" id="connectionSpeed">0 Mbps</div>
+                            <div class="stat-label">Kecepatan Koneksi</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill good-performance" id="speedBar" style="width: 0%"></div>
+                            </div>
+                            <div class="server-status">
+                                <div class="status-indicator status-good" id="speedStatus"></div>
+                                <span id="speedStatusText">Fast</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-memory stat-icon"></i>
+                            <div class="stat-value" id="memoryUsage">0 MB</div>
+                            <div class="stat-label">Penggunaan Memori</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill good-performance" id="memoryBar" style="width: 0%"></div>
+                            </div>
+                            <div class="server-status">
+                                <div class="status-indicator status-good" id="memoryStatus"></div>
+                                <span id="memoryStatusText">Optimal</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="refresh-btn" onclick="refreshServerStats()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Server Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
   <script src="resource/js/script.js"></script>
   <script src="resource/js/credits.js"></script>
+  <script src="resource/js/setting.js"></script>
 </body>
 </html>
