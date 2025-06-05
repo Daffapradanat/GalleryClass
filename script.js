@@ -361,9 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Removed the problematic function call - startWelcomeSequence() was never defined
-// The welcome animation is already handled by the window 'load' event listener above
-
 window.addEventListener('scroll', function() {
     const floatingBtn = document.querySelector('.floating-hover-btn');
     if (floatingBtn) {
