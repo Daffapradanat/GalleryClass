@@ -7,8 +7,8 @@ function includeHTML(id, file) {
         .catch(err => console.error(`Failed to load ${file}:`, err));
 }
 
-includeHTML("sidebar-include", "sidebar.html");
-includeHTML("header-include", "header.html");
+includeHTML("sidebar-include", "component/sidebar.html");
+includeHTML("header-include", "component/header.html");
 
 const welcomeWords = ['welcome', 'to', 'Gallery of Memory', 'PPLG 2', 'Generation I'];
 let currentWordIndex = 0;
