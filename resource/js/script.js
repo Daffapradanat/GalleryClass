@@ -156,6 +156,117 @@ function recalculateAllLayouts() {
     });
 }
 
+let currentImageSrc = '';
+let currentImageAlt = '';
+
+function openImageModal(imgSrc, imgAlt, imgIndex) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalInfo = document.getElementById('modalImageInfo');
+    
+    currentImageSrc = imgSrc;
+    currentImageAlt = imgAlt || `Foto ${imgIndex + 1}`;
+    
+    modalImage.src = imgSrc;
+    modalImage.alt = currentImageAlt;
+    modalInfo.textContent = currentImageAlt;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    
+    setTimeout(() => {
+        document.getElementById('modalImage').src = '';
+    }, 300);
+}
+
+async function downloadImage() {
+    const downloadBtn = document.querySelector('.modal-download i');
+    const originalClass = downloadBtn.className;
+    
+    try {
+        downloadBtn.className = 'fas fa-spinner download-loading';
+        
+        const fileId = extractFileId(currentImageSrc);
+        if (!fileId) {
+            throw new Error('Cannot extract file ID from image source');
+        }
+        
+        const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        
+        const link = document.createElement('a');
+        link.href = directDownloadUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        const filename = currentImageAlt.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.jpg';
+        link.download = filename;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        downloadBtn.className = 'fas fa-check';
+        setTimeout(() => {
+            downloadBtn.className = originalClass;
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Download method 1 failed, trying method 2:', error);
+        
+        try {
+            const fileId = extractFileId(currentImageSrc);
+            const viewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+            window.open(viewUrl, '_blank', 'noopener,noreferrer');
+            
+            downloadBtn.className = 'fas fa-external-link-alt';
+            setTimeout(() => {
+                downloadBtn.className = originalClass;
+            }, 1000);
+            
+        } catch (fallbackError) {
+            console.error('All download methods failed:', fallbackError);
+            
+            downloadBtn.className = 'fas fa-exclamation-triangle';
+            setTimeout(() => {
+                downloadBtn.className = originalClass;
+            }, 1000);
+            
+            showDownloadErrorMessage();
+        }
+    }
+}
+
+function extractFileId(url) {
+    let match = url.match(/\/d\/([a-zA-Z0-9_-]+)\//);
+    if (match) return match[1];
+    
+    match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match) return match[1];
+    
+    match = url.match(/thumbnail\?id=([a-zA-Z0-9_-]+)/);
+    if (match) return match[1];
+    
+    return null;
+}
+
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImageModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
+    }
+});
+
 function createImagePlaceholder(index) {
     const col = document.createElement('div');
     col.className = 'gallery-item';
@@ -165,6 +276,12 @@ function createImagePlaceholder(index) {
     const img = document.createElement('img');
     img.alt = `foto${index + 1}`;
     img.loading = "lazy";
+    
+    img.addEventListener('click', function() {
+        const imgSrc = this.src;
+        const imgAlt = this.alt;
+        openImageModal(imgSrc, imgAlt, index);
+    });
     
     const placeholderSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23333;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23555;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' fill='%23888' text-anchor='middle' dy='.3em'%3ELoading...%3C/text%3E%3C/svg%3E`;
     

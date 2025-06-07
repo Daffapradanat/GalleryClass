@@ -401,87 +401,307 @@ body {
     50% { transform: translateY(-10px); }
 }
 
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    animation: modalFadeIn 0.3s ease;
+    padding: 20px;
+}
+
+.image-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-image-container {
+    position: relative;
+    max-width: 80vw;
+    max-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: imageZoomIn 0.3s ease;
+    
+    max-width: min(80vw, 1200px);
+    max-height: min(75vh, 800px);
+}
+
+.modal-image[data-orientation="portrait"] {
+    max-width: min(60vw, 600px);
+    max-height: min(75vh, 900px);
+}
+
+.modal-image[data-orientation="landscape"] {
+    max-width: min(80vw, 1200px);
+    max-height: min(65vh, 700px);
+}
+
+.modal-image[data-orientation="square"] {
+    max-width: min(70vw, 800px);
+    max-height: min(70vh, 800px);
+}
+
+.modal-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #FFF2EB;
+    font-size: 18px;
+    z-index: 10000;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.modal-download {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #333, #222);
+    border: 2px solid rgba(255, 242, 235, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #FFF2EB;
+    font-size: 20px;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(255, 242, 235, 0.1);
+}
+
+.modal-download:hover {
+    background: linear-gradient(135deg, #444, #333);
+    border-color: rgba(255, 242, 235, 0.4);
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(255, 242, 235, 0.2);
+}
+
+.modal-download:active {
+    transform: scale(0.95);
+}
+
+.modal-info {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #FFF2EB;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes imageZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
     .sidebar {
-    transform: translateX(-100%);
-    visibility: hidden;
+        transform: translateX(-100%);
+        visibility: hidden;
     }
 
     .mobile-nav {
-    display: block;
+        display: block;
     }
 
     .main {
-    margin-left: 0;
-    width: 100%;
-    padding-bottom: 80px;
+        margin-left: 0;
+        width: 100%;
+        padding-bottom: 80px;
     }
 
     .header {
-    padding: 0 1rem;
+        padding: 0 1rem;
     }
 
     .header-logo {
-    width: 40px;
-    height: 40px;
+        width: 40px;
+        height: 40px;
     }
 
     .header-title {
-    font-size: 1.2rem;
-    letter-spacing: 1px;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
     }
 
     .floating-hover-btn {
-    bottom: 6rem;
-    right: 1.5rem;
-    width: 50px;
-    height: 50px;
+        bottom: 6rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
     }
 
     .floating-hover-btn i {
-    font-size: 1.2rem;
+        font-size: 1.2rem;
     }
 
     #gallery {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    padding: 1rem;
-    gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        padding: 1rem;
+        gap: 12px;
     }
 
     .welcome-text {
-    font-size: 2.5rem;
-    padding: 0 1rem;
+        font-size: 2.5rem;
+        padding: 0 1rem;
+    }
+
+    .modal-image-container {
+        max-width: 90vw;
+        max-height: 70vh;
+    }
+
+    .modal-image {
+        max-width: min(90vw, 400px);
+        max-height: min(70vh, 600px);
+    }
+
+    .modal-image[data-orientation="portrait"] {
+        max-width: min(80vw, 350px);
+        max-height: min(70vh, 650px);
+    }
+
+    .modal-image[data-orientation="landscape"] {
+        max-width: min(90vw, 450px);
+        max-height: min(60vh, 500px);
+    }
+
+    .modal-image[data-orientation="square"] {
+        max-width: min(85vw, 400px);
+        max-height: min(65vh, 400px);
+    }
+
+    .modal-close {
+        top: -10px;
+        right: -10px;
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    .modal-download {
+        bottom: -10px;
+        right: -10px;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .modal-info {
+        bottom: -40px;
+        font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
     #gallery {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0.5rem;
-    gap: 8px;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0.5rem;
+        gap: 8px;
     }
 
     .welcome-text {
-    font-size: 2rem;
+        font-size: 2rem;
     }
 
     .mobile-nav-container {
-    padding: 0 0.5rem;
+        padding: 0 0.5rem;
     }
 
     .mobile-nav a {
-    padding: 0.5rem;
-    font-size: 1.1rem;
+        padding: 0.5rem;
+        font-size: 1.1rem;
     }
 
     .header-title {
-    font-size: 1rem;
-    letter-spacing: 0.5px;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
     }
 
     .header-logo {
-    width: 35px;
-    height: 35px;
+        width: 35px;
+        height: 35px;
+    }
+
+    .modal-image-container {
+        max-width: 95vw;
+        max-height: 65vh;
+    }
+
+    .modal-image {
+        max-width: min(95vw, 350px);
+        max-height: min(65vh, 500px);
+    }
+
+    .modal-image[data-orientation="portrait"] {
+        max-width: min(85vw, 300px);
+        max-height: min(65vh, 550px);
+    }
+
+    .modal-image[data-orientation="landscape"] {
+        max-width: min(95vw, 400px);
+        max-height: min(55vh, 400px);
+    }
+
+    .modal-image[data-orientation="square"] {
+        max-width: min(90vw, 350px);
+        max-height: min(60vh, 350px);
     }
 }
 

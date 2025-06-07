@@ -28,6 +28,21 @@
     </div>
   </div>
 
+  <div id="imageModal" class="image-modal">
+      <div class="modal-image-container">
+          <img id="modalImage" class="modal-image" src="" alt="">
+          <button class="modal-close" onclick="closeImageModal()">
+              <i class="fas fa-times"></i>
+          </button>
+          <button class="modal-download" onclick="downloadImage()" title="Download Image">
+              <i class="fas fa-download"></i>
+          </button>
+          <div class="modal-info">
+              <span id="modalImageInfo"></span>
+          </div>
+      </div>
+  </div>
+
   <div class="floating-hover-btn" onclick="scrollToTop()" title="Scroll to Top">
     <i class="fas fa-arrow-up"></i>
   </div>
@@ -84,7 +99,6 @@
             </div>
           </div>
 
-          <!-- Contributors Section -->
           <div class="contributors-section">
             <h2 class="section-title">Special Thanks</h2>
             <div class="contributors-grid">
@@ -126,7 +140,6 @@
             </div>
           </div>
 
-          <!-- Tech Stack -->
           <div class="tech-stack">
             <h2 class="tech-title">Technology Stack</h2>
             <div class="tech-grid">
@@ -157,7 +170,6 @@
             </div>
           </div>
 
-          <!-- Appreciation -->
           <div class="appreciation">
             <p class="appreciation-text">
               "Meskipun dikerjakan sendiri, Gallery PPLG II ini adalah hasil kolaborasi tidak langsung dengan semua teman-teman. 
